@@ -13,20 +13,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   List<WelcomeModel> welcomes = [
     WelcomeModel(
         image: 'assets/images/taxiapp1.png',
-        title: 'Welcome To GoTaxi 1',
-        body: 'Welcome To The Go Taxi 1'),
+        title: 'Download, call, go',
+        body: 'Praesent tellus mauris, tincidunt nec ipsum id, faucibus pellentesque leo. Nunc congue ac tellus quis porttitor. '),
     WelcomeModel(
         image: 'assets/images/taxiapp2.png',
         title: 'Welcome To GoTaxi 2',
-        body: 'Welcome To The Go Taxi 2'),
+        body: 'Praesent tellus mauris, tincidunt nec ipsum id, faucibus pellentesque leo. Nunc congue ac tellus quis porttitor. '),
     WelcomeModel(
         image: 'assets/images/taxiapp3.png',
         title: 'Welcome To GoTaxi 3',
-        body: 'Welcome To The Go Taxi 3'),
+        body: 'Praesent tellus mauris, tincidunt nec ipsum id, faucibus pellentesque leo. Nunc congue ac tellus quis porttitor. '),
     WelcomeModel(
         image: 'assets/images/taxiapp2.png',
         title: 'Welcome To GoTaxi 4',
-        body: 'Welcome To The Go Taxi 4'),
+        body: 'Praesent tellus mauris, tincidunt nec ipsum id, faucibus pellentesque leo. Nunc congue ac tellus quis porttitor. '),
   ];
   PageController _pageController;
   String nextText = 'Next';
@@ -90,8 +90,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   children: <Widget>[
                     Image.asset(welcomes[position].image, fit: BoxFit.cover,),
                     _pageIndicators(context, position),
-                    Text(welcomes[position].title),
-                    Text(welcomes[position].body),
+                    Text(welcomes[position].title,style:Theme.of(context).textTheme.title.copyWith(fontSize: 16),),
+                    Text(welcomes[position].body, style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 14),),
                   ],
                 ),
               );
