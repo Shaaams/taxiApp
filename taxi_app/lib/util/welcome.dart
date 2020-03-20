@@ -31,6 +31,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   PageController _pageController;
   String nextText = 'Next';
   bool amInLastPage = false;
+  int _currentPosition = 1;
 
   @override
   void initState() {
@@ -66,45 +67,144 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         alignment: Alignment.topCenter,
         child: Padding(
           padding: EdgeInsets.only(top: 100),
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: this.welcomes.length,
-              // Check if last page end (nextText = Get Started) or no
-              onPageChanged: (position){
-                  if(position == (welcomes.length -1 )){
-                    setState(() {
-                      nextText = 'Get Started';
-                      amInLastPage = true;
-                    });
-                  }else{
-                    setState(() {
-                      nextText = 'Next';
-                      amInLastPage = false;
-                    });
-                  }
-              },
-              itemBuilder: (context, position){
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: <Widget>[
-                    Image.asset(welcomes[position].image, fit: BoxFit.cover,),
-                    _pageIndicators(context, position),
-                    Text(welcomes[position].title,style:Theme.of(context).textTheme.title.copyWith(fontSize: 16),),
-                    Text(welcomes[position].body, style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 14),),
-                  ],
-                ),
-              );
-              }
-          ),
+           child: Stack(
+             children: <Widget>[
+               PageView.builder(
+                   controller: _pageController,
+                   itemCount: this.welcomes.length,
+                   // Check if last page end (nextText = Get Started) or no
+                   onPageChanged: (position){
+                      setState(() {
+                        _currentPosition = position;
+                      });
+                     if(position == (welcomes.length -1 )){
+                       setState(() {
+                         nextText = 'Get Started';
+                         amInLastPage = true;
+                       });
+                     }else{
+                       setState(() {
+                         nextText = 'Next';
+                         amInLastPage = false;
+                       });
+                     }
+                   },
+                   itemBuilder: (context, position){
+                     return Padding(
+                       padding: const EdgeInsets.all(16.0),
+                       child: Column(
+                         children: <Widget>[
+                           Image.asset(
+                             welcomes[position].image,
+                             fit: BoxFit.cover,
+                             height: MediaQuery.of(context).size.height*0.5,
+                           ),
+                           SizedBox(
+                             height: 48,
+                           ),
+
+
+                           SizedBox(
+                             height: 16,
+                           ),
+                           Text(
+
+                             welcomes[position].title,
+                             textAlign: TextAlign.center,
+                             style:Theme.of(context).textTheme.title.copyWith(fontSize: 16),
+                           ),
+                           SizedBox(
+                             height: 16,
+                           ),
+                           Text(
+                             welcomes[position].body,
+                             textAlign: TextAlign.center,
+                             style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 14),
+                           ),
+                         ],
+                       ),
+                     );
+                   }
+               ),
+               Align(
+                   alignment: Alignment.bottomCenter,
+                   child: _pageIndicators(context, _currentPosition),
+               ),
+             ],
+           ),
         ),
       );
+
   }
   // Page Indicators Method
   Widget _pageIndicators(BuildContext context, int position) {
-    return Row();
+    double offset = MediaQuery.of(context).size.height * 0.3;
+    return Transform.translate(
+      offset: Offset(0,  - offset),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: _newPageIndicators(),
+      ),
+    );
+  }
+  //method three is recommended
+  List<Widget> _newPageIndicators() {
+    List<Widget> widgets = [];
+    for(int i = 0 ; i < welcomes.length; i ++){
+      widgets.add(
+        _pageIndicator(
+            (_currentPosition ==i ? Theme.of(context).primaryColorLight : Color(0xFFEFDC99)),
+            (i == welcomes.length-1? 0:12)),
+      );
+
+    }
+    return widgets;
   }
 
+    //method Two not recommended
+  List<Widget> _medialPageIndicators(){
+    List<Widget> widgets = [];
+    for(int i = 0 ; i < welcomes.length; i ++){
+      Color color;
+      if (_currentPosition == i ){
+        color = Theme.of(context).primaryColorLight;
+      }else{
+        color = Color(0xFFEFDC99);
+      }
+      double margin;
+      if(i == welcomes.length -1){
+        margin = 0;
+      }else{
+        margin = 12;
+      }
+
+      widgets.add( _pageIndicator(color, margin));
+
+    }
+    return widgets;
+  }
+
+// method one not recommended
+  List<Widget> _oldPageIndicators(){
+    return[
+      _pageIndicator((_currentPosition ==0 ? Theme.of(context).primaryColorLight : Color(0xFFEFDC99)), 12),
+      _pageIndicator((_currentPosition ==1 ? Theme.of(context).primaryColorLight : Color(0xFFEFDC99)), 12),
+      _pageIndicator((_currentPosition ==2 ? Theme.of(context).primaryColorLight : Color(0xFFEFDC99)), 12),
+      _pageIndicator((_currentPosition ==3 ? Theme.of(context).primaryColorLight : Color(0xFFEFDC99)), 0),
+    ];
+  }
+
+  Widget _pageIndicator(Color color, double margin){
+    return Container(
+      width: 15 ,
+      height: 5 ,
+      margin: EdgeInsets.only(right: margin),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.all(Radius.circular(25)),
+      ),
+    );
+  }
   // Bottom Button Navigation Method
   Widget _bottomNavigation( BuildContext context, double radius ){
           return Align(
@@ -116,7 +216,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     topLeft: Radius.circular(radius),
                     topRight: Radius.circular(radius)),
               ),
-              height: MediaQuery.of(context).size.height * 0.15,
+              height: MediaQuery.of(context).size.height * 0.1,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
