@@ -94,10 +94,32 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                        padding: const EdgeInsets.all(16.0),
                        child: Column(
                          children: <Widget>[
-                           Image.asset(
-                             welcomes[position].image,
-                             fit: BoxFit.cover,
-                             height: MediaQuery.of(context).size.height*0.5,
+                           AnimatedBuilder(
+                             child: Image.asset(
+                               welcomes[position].image,
+                               fit: BoxFit.cover,
+                               height: MediaQuery.of(context).size.height*0.5,
+                             ),
+                             builder: (BuildContext context, child){
+                               double transitionFactor = 1;
+                               if (_pageController.position.haveDimensions){
+                                 transitionFactor = _pageController.page - position ;
+                                 transitionFactor = (1- (transitionFactor.abs()*0.6)).clamp(0.0, 1.0);
+                                 return Image.asset(
+                                   welcomes[position].image,
+                                   fit: BoxFit.contain,
+                                   height: (MediaQuery.of(context).size.height* 0.5) * transitionFactor,
+                                 );
+                               }else{
+                                 return Image.asset(
+                                   welcomes[position].image,
+                                   fit: BoxFit.contain,
+                                   height: MediaQuery.of(context).size.height*0.5,
+                                 );
+                               }
+
+                             },
+                             animation: _pageController,
                            ),
                            SizedBox(
                              height: 48,
