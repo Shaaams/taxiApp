@@ -91,7 +91,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                    },
                    itemBuilder: (context, position){
                      return Padding(
-                       padding: const EdgeInsets.all(16.0),
+                       padding: const EdgeInsets.all(1.0),
                        child: Column(
                          children: <Widget>[
                            AnimatedBuilder(
@@ -129,20 +129,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                            SizedBox(
                              height: 16,
                            ),
-                           Text(
-
-                             welcomes[position].title,
-                             textAlign: TextAlign.center,
-                             style:Theme.of(context).textTheme.title.copyWith(fontSize: 16),
-                           ),
+                           _animateTitle(context, widget, position),
                            SizedBox(
                              height: 16,
                            ),
-                           Text(
-                             welcomes[position].body,
-                             textAlign: TextAlign.center,
-                             style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 14),
-                           ),
+                           _animateBody(context, widget, position),
                          ],
                        ),
                      );
@@ -283,4 +274,59 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     Navigator.of(context).push(MaterialPageRoute(builder: (context){return HomeScreen();}));
   }
 
+  Widget _animateTitle(BuildContext context , Widget widget, int position){
+    return AnimatedBuilder(
+      builder: (BuildContext context, child){
+        double transitionFactor = 1;
+        if (_pageController.position.haveDimensions){
+          transitionFactor = _pageController.page - position ;
+          transitionFactor = (1- (transitionFactor.abs())).clamp(0.0, 1.0);
+          return _textTitleAnimate(position, transitionFactor);
+        }else {
+          return _textTitleAnimate(position,transitionFactor);
+        }
+      },
+      animation: _pageController,
+    );
+  }
+  Widget _animateBody(BuildContext context , Widget widget, int position){
+    return AnimatedBuilder(
+      builder: (BuildContext context, child){
+        double transitionFactor = 1;
+        if (_pageController.position.haveDimensions){
+          transitionFactor = _pageController.page - position ;
+          transitionFactor = (1- (transitionFactor.abs())).clamp(0.0, 1.0);
+          return _textBodyAnimate(position, transitionFactor);
+        }else {
+          return _textBodyAnimate(position,transitionFactor);
+        }
+      },
+      animation: _pageController,
+    );
+  }
+  Widget _textTitleAnimate(int position, double opacity){
+    return AnimatedOpacity(
+      opacity: opacity,
+      duration: Duration(milliseconds: 300),
+      child: Text(
+        welcomes[position].title,
+        textAlign: TextAlign.center,
+        style:Theme.of(context).textTheme.title.copyWith(fontSize: 16),
+      ),
+    );
+  }
+
+
+
+  Widget _textBodyAnimate(int position, double opacity){
+    return AnimatedOpacity(
+      opacity: opacity,
+      duration: Duration(milliseconds: 300),
+      child: Text(
+        welcomes[position].body,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 14),
+      ),
+    );
+  }
 }
