@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:taxiapp/auth/clint_register_screen.dart';
 import 'welcome_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taxiapp/home.dart';
@@ -271,7 +272,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   void goToHomePage(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context){return HomeScreen();}));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){return ClintRegisterScreen();}));
   }
 
   Widget _animateTitle(BuildContext context , Widget widget, int position){
