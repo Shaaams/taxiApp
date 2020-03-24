@@ -17,4 +17,7 @@ ThemeData mainTheme = ThemeData(
       height: 1.5,
     ),
   ),
+  buttonTheme: ButtonThemeData(
+    buttonColor: Color(0xFFEFBC06),
+  ),
 );

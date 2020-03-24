@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taxiapp/auth/clint_register_screen.dart';
 import 'home.dart';
 import 'util/welcome.dart';
 import 'main_theme.dart';
@@ -11,6 +12,11 @@ void main() async {
   Widget homeScreen = HomeScreen();
   if( seen == null || !seen){
       homeScreen = WelcomeScreen();
+  }else{
+    String userId = sharedPreferences.getString('user_id');
+    if (userId == null || userId == ''){
+      homeScreen = ClintRegisterScreen();
+    }
   }
   runApp(GoTaxi(homeScreen));
 }
