@@ -58,3 +58,36 @@ Widget sharedButton(BuildContext context , String title , Widget screen){
     ),
   );
 }
+
+Widget memberSignInLine(BuildContext context , Widget screen) {
+  return Row(
+    children: <Widget>[
+      Text('already member ?',
+        style: TextStyle(
+          color: Colors.grey,
+        ),
+      ),
+      FlatButton(
+        child: Text(
+          'Sign In',
+          style: TextStyle(color: Theme.of(context).primaryColorLight,fontWeight: FontWeight.bold),
+        ),
+        onPressed: () {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => screen
+          ));
+        },
+      ),
+    ],
+  );
+}
+
+Widget loading(BuildContext context){
+  return SizedBox(
+    height: 25,
+    width: 25,
+    child: CircularProgressIndicator(
+      backgroundColor: Colors.white,
+    ),
+  );
+}

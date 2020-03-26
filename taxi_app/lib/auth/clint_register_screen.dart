@@ -12,13 +12,16 @@ class ClintRegisterScreen extends StatefulWidget {
 
 class _ClintRegisterScreenState extends State<ClintRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  String email;
-  String password;
-  String passwordConfirm;
+  String _email;
+  String _password;
+  String _passwordConfirm;
 
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _passwordConfirmController = TextEditingController();
+
+  bool _formAutoValidation =false;
+  bool enabled = true;
 
   @override
   void initState() {
@@ -40,33 +43,62 @@ class _ClintRegisterScreenState extends State<ClintRegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context, 'Sign Up'),
+
       body: Form(
+        autovalidate: _formAutoValidation,
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 32),
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 32, top: 32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              SizedBox(
-                height: 75,
-              ),
               TextFormField(
+                controller: _emailController,
+                enabled: enabled,
                 decoration: InputDecoration(
                   hintText: 'Email',
                 ),
+                validator: (value){
+                  if (value.isEmpty){
+                    return 'Email Is Required';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
+                controller: _passwordController,
+                enabled: enabled,
+                obscureText: true,
                 decoration: InputDecoration(
                   hintText: 'Password',
                 ),
+                validator: (value){
+                  if (value.isEmpty){
+                    return 'Password Is Required';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
+                controller: _passwordConfirmController,
+                enabled: enabled,
+                obscureText: true,
                 decoration: InputDecoration(
                   hintText: 'Confirm Password',
                 ),
+                validator: (value){
+                  if (value.isEmpty){
+                    return 'Confirm Password Is Required';
+                  }
+                  if (_passwordController.text != value ){
+                    return 'Password Dos\'t Match !';
+                  }
+                  return null;
+                },
               ),
-              sharedButton(context, 'Sign Up',LoginScreen()),
-              _memberSignInLine(context),
+
+              enabled ? _signUpButton(context, 'Sign Up'): loading(context),
+              memberSignInLine(context, LoginScreen()),
               or(context),
               sharedButton(context, 'Create Driver Account', DriverRegisterScreen()),
             ],
@@ -75,26 +107,64 @@ class _ClintRegisterScreenState extends State<ClintRegisterScreen> {
       ),
     );
   }
-  Widget _memberSignInLine(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Text('already member ?',
-        style: TextStyle(
-          color: Colors.grey,
-        ),
-        ),
-        FlatButton(
-          child: Text(
-            'Sign In',
-            style: TextStyle(color: Theme.of(context).primaryColorLight,fontWeight: FontWeight.bold),
+
+  Widget _signUpButton(BuildContext context, String title) {
+    return Container(
+      height: 50,
+      width: double.infinity,
+      child: FlatButton(
+        child: Text(
+          title,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
           ),
-          onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => LoginScreen()
-            ));
-          },
         ),
-      ],
+        onPressed: () {
+            // Check Form State
+          if(! _formKey.currentState.validate()){
+            setState(() {
+              _formAutoValidation = true;
+            });
+          }else{
+            // ToDo: Make A Call
+            _createUserAccount();
+          }
+        },
+        color: Theme.of(context).primaryColorLight,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(25)),
+        ),
+      ),
     );
   }
+
+  void _enableSubmitAccount(){
+    setState(() {
+      enabled = false;
+    });
+  }
+
+  void _setClintAccount(){
+    setState(() {
+      _email    = _emailController.text;
+      _password = _passwordController.text;
+    });
+  }
+
+  void _createUserAccount(){
+    _enableSubmitAccount();
+    _setClintAccount();
+    //ToDo: Mack Call FireBase To Create User Account
+
+    Future.delayed(Duration(seconds: 5), (){
+      setState(() {
+        enabled = true;
+      });
+    });
+  }
+
+ 
+
 }
