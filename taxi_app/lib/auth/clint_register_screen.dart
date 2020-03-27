@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taxiapp/auth/driver_register_screen.dart';
 import 'package:taxiapp/auth/login_screen.dart';
+import 'package:taxiapp/home.dart';
 import 'package:taxiapp/util/shared_widgets.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ClintRegisterScreen extends StatefulWidget {
   @override
@@ -12,6 +15,8 @@ class ClintRegisterScreen extends StatefulWidget {
 
 class _ClintRegisterScreenState extends State<ClintRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
   String _email;
   String _password;
   String _passwordConfirm;
@@ -153,18 +158,27 @@ class _ClintRegisterScreenState extends State<ClintRegisterScreen> {
     });
   }
 
-  void _createUserAccount(){
+  void _createUserAccount() async {
     _enableSubmitAccount();
     _setClintAccount();
     //ToDo: Mack Call FireBase To Create User Account
+    AuthResult _authResult = await _firebaseAuth.createUserWithEmailAndPassword(email: _email, password: _password);
+    FirebaseUser _user = _authResult.user;
+    if (_user !=null){
+      SharedPreferences _sharedPreferences = await SharedPreferences.getInstance();
+      _sharedPreferences.setString('user_id', _user.uid);
 
-    Future.delayed(Duration(seconds: 5), (){
-      setState(() {
-        enabled = true;
-      });
-    });
+
+        Firestore.instance.collection('profiles').document().setData({
+          'user_id' : _user.uid,
+          'type'    : 'customer',
+
+        }).then((value){
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => HomeScreen()));
+        });
+
+
+    }
   }
-
- 
-
 }
